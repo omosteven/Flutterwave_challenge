@@ -2,8 +2,6 @@ const express = require("express"); // import the express js
 
 const bodyParser = require("body-parser");
 
-// const formidable = require("formidable");
-
 const multer = require("multer");
 
 // {dest: 'uploaded_images/'}
