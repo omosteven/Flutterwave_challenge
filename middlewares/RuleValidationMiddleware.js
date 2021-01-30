@@ -14,7 +14,7 @@ class RuleValidator {
     }
 
     static isJSONArrayOrString(checkData) {
-        if (typeof checkData === "object") {
+        if (typeof checkData === "object" ) {
             return true
         } else if (typeof checkData === "string") {
             return true

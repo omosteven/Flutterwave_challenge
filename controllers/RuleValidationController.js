@@ -11,7 +11,7 @@ class RuleValidationController {
 
     static base(req, res) {
 
-        res.status(200).send({
+        res.status(200).json({
             message: "My Rule-Validation API",
             status: "success",
             data: {
@@ -41,17 +41,17 @@ class RuleValidationController {
             // c1/ A valid JSON object
             // c2/ A valid array
             // c3/ A string
-            
+
             if (!isJSON(rule) && isJSONArrayOrString(data)) { // if rule is not JSON but data is json, string or array
-                res.status(400).send({"message": "rule should be an object.", "status": "error", "data": null})
+                res.status(400).json({"message": "rule should be an object.", "status": "error", "data": null})
 
             } else if (!isJSONArrayOrString(data) && isJSON(rule)) { // if rule is JSON but data is neither json, string nor array
 
-                res.status(400).send({"message": "data should be a|an object, string or array.", "status": "error", "data": null})
+                res.status(400).json({"message": "data should be a|an object, string or array.", "status": "error", "data": null})
 
             } else if (!isJSON(rule) && !isJSONArrayOrString(data)) { // if rule is not JSON and data is neither json, string nor array
 
-                res.status(200).send({"message": "rule should be an object. data should be a|an object, string or array.", "status": "error", "data": null})
+                res.status(200).json({"message": "rule should be an object. data should be a|an object, string or array.", "status": "error", "data": null})
 
             } else { // f/ If an invalid JSON payload is passed to your API, your endpoint response (HTTP 400 status code) should be:
                 if (_isJSONValid([
@@ -71,7 +71,7 @@ class RuleValidationController {
                        
                         if (isRuleValid) {
                        
-                            res.status(200).send({
+                            res.status(200).json({
                                 message: `field ${validatedField} successfully validated.`,
                                 status: "success",
                                 data: {
@@ -85,7 +85,7 @@ class RuleValidationController {
                                 }
                             })
                         } else {
-                            res.status(400).send({
+                            res.status(400).json({
                                 message: `field ${validatedField} failed validation.`,
                                 status: "error",
                                 data: {
@@ -103,13 +103,13 @@ class RuleValidationController {
                     } else { // assign the missing field to a variable
                         const missingField = rule["field"];
 
-                        res.status(400).send({"message": `field ${missingField} is missing from data.`, "status": "error", "data": null})
+                        res.status(400).json({"message": `field ${missingField} is missing from data.`, "status": "error", "data": null})
 
                     }
 
                 } else { // check If an invalid JSON payload is passed to your API (f).
 
-                    res.status(400).send({message: "Invalid JSON payload passed.", status: "error", data: null})
+                    res.status(400).json({message: "Invalid JSON payload passed.", status: "error", data: null})
 
                 }
             }
@@ -121,14 +121,14 @@ class RuleValidationController {
             // d/ If a required field isn't passed. Your endpoint should return with a response (HTTP 400 status code) that is similar to the below:
             if (rule === undefined && data != undefined) { // check if it was rule that was missing or not
 
-                res.status(400).send({message: "rule is required.", status: "error", data: null})
+                res.status(400).json({message: "rule is required.", status: "error", data: null})
 
             } else if (rule != undefined && data === undefined) { // check if it was data field is missing.
 
-                res.status(400).send({message: "data is required.", status: "error", data: null})
+                res.status(400).json({message: "data is required.", status: "error", data: null})
 
             } else { // f/ If an invalid JSON payload is passed to your API, your endpoint response (HTTP 400 status code) should be:
-                res.status(400).send({message: "Invalid JSON payload passed.", status: "error", data: null})
+                res.status(400).json({message: "Invalid JSON payload passed.", status: "error", data: null})
 
             }
         }

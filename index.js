@@ -2,11 +2,6 @@ const express = require("express"); // import the express js
 
 const bodyParser = require("body-parser");
 
-const multer = require("multer");
-
-// {dest: 'uploaded_images/'}
-const formData = multer();
-
 const cors = require("cors");
 
 const app = express();
@@ -15,14 +10,9 @@ const app = express();
 // Import the Controllers End Points as Routes
 const RuleValidationRoute = require("./routes/RuleValidationRoute");
 
-
 app.use(bodyParser.json());
 
 app.use(bodyParser.urlencoded({extended: true}));
-
-app.use(bodyParser.json());
-
-app.use(formData.array());
 
 app.use(express.static("public"));
 
@@ -55,10 +45,10 @@ app.use("/", RuleValidationRoute);
 //     res.status(404).send({message: "rule is required.", status: "error", data: null});
 // });
 
-const server = app.listen(5000, () => {
+const server = app.listen(5000, (params) => {
     host = server.address().address;
 
-    port = server.address.port;
+    port = process.env.PORT === undefined ? server.address().port : process.env.PORT
 
-    console.log("Server running at " + process.env.PORT);
+    console.log("Server running at " + port);
 });
