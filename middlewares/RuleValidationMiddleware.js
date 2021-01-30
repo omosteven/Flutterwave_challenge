@@ -25,28 +25,36 @@ class RuleValidator {
     }
 
     static isFieldInData(field, checkData) {
-        if (typeof checkData === "object") { // check if checkData is an object
-
-            if (Array.isArray(checkData)) { // check if checkData is an Array
-                return checkData.includes(field); // check if array checkData has the field value
-            } else {
-
-                if (checkData[field] === undefined) { // check if Object checkData has the key field or not
-                    return false;
-                } else {
-                    return true
-                }
-            }
-        } else if (typeof checkData === "string") { // check if checkData is string
-            if (field === checkData) { // check if the field is string checkData
-                return true
-            } else {
-                return false
-            }
+       
+        if (checkData[field] !== undefined) {
+            return checkData[field];
         } else {
-            return false
+            return false;
         }
 
+    }
+
+    static validateRule(field_value, condition, condition_value) {
+
+        if (condition === "eq" && field_value === condition_value) {
+
+            return true;
+        } else if ((condition === "neq" && field_value !== condition_value)) {
+
+            return true;
+        } else if (condition === "gt" && field_value > condition_value) {
+
+            return true;
+        } else if (condition === "gte" && field_value >= condition_value) {
+
+            return true;
+        } else if (condition === "contains" && condition_value.includes(field_value)) {
+
+            return true;
+        } else {
+
+            return false;
+        }
     }
 
     static _isJSONValid(checker, dataObject) {
@@ -57,7 +65,7 @@ class RuleValidator {
                 count += 1;
             }
         }
-        // console.log(count, Object.keys(check).length)
+
         if ((count === Object.keys(checker).length) & (count !== 0)) {
             return true;
         } else {

@@ -1,4 +1,10 @@
-const {isJSON, isJSONArrayOrString, isFieldInData, _isJSONValid} = require("../middlewares/RuleValidationMiddleware");
+const {
+    isJSON,
+    isJSONArrayOrString,
+    isFieldInData,
+    _isJSONValid,
+    validateRule
+} = require("../middlewares/RuleValidationMiddleware");
 
 class RuleValidationController {
 
@@ -30,6 +36,12 @@ class RuleValidationController {
             // Check  If a field is of the wrong type
 
             // e/ If a field is of the wrong type, your endpoint should return with a response (HTTP 400 status code) that is similar to the below:
+
+            // c/ The data field can be any of:
+            // c1/ A valid JSON object
+            // c2/ A valid array
+            // c3/ A string
+            
             if (!isJSON(rule) && isJSONArrayOrString(data)) { // if rule is not JSON but data is json, string or array
                 res.status(400).send({"message": "rule should be an object.", "status": "error", "data": null})
 
@@ -44,45 +56,54 @@ class RuleValidationController {
             } else { // f/ If an invalid JSON payload is passed to your API, your endpoint response (HTTP 400 status code) should be:
                 if (_isJSONValid([
                     "field", "condition", "condition_value"
-                ], rule)) {
+                ], rule)) { // check if the rule field contains the required fields.
 
-                    // check if the rule field contains the required fields.
+                    const isFieldMissing = isFieldInData(rule["field"], data);
+                    // throw field value if not missing otherwise false
 
                     // g/ If the field specified in the rule object is missing from the data passed, your endpoint response (HTTP 400 status code) should be:
                     if (isFieldInData(rule["field"], data)) {
 
                         const validatedField = rule["field"];
 
+                        const isRuleValid = validateRule(isFieldMissing, rule["condition"], rule["condition_value"]);
                         // h/ If the rule is successfully validated, your endpoint response (HTTP 200 status code) should be:
-                        res.status(200).send({
-                            message: `field ${validatedField} successfully validated.`,
-                            status: "success",
-                            data: {
-                                validation: {
-                                    error: false,
-                                    field: validatedField,
-                                    field_value: data[validatedField],
-                                    condition: rule["condition"],
-                                    condition_value: rule["condition_value"]
+                       
+                        if (isRuleValid) {
+                       
+                            res.status(200).send({
+                                message: `field ${validatedField} successfully validated.`,
+                                status: "success",
+                                data: {
+                                    validation: {
+                                        error: false,
+                                        field: validatedField,
+                                        field_value: data[validatedField],
+                                        condition: rule["condition"],
+                                        condition_value: rule["condition_value"]
+                                    }
                                 }
-                            }
-                        })
+                            })
+                        } else {
+                            res.status(400).send({
+                                message: `field ${validatedField} failed validation.`,
+                                status: "error",
+                                data: {
+                                    validation: {
+                                        error: true,
+                                        field: validatedField,
+                                        field_value: data[validatedField],
+                                        condition: rule["condition"],
+                                        condition_value: rule["condition_value"]
+                                    }
+                                }
+                            })
+                        }
+
                     } else { // assign the missing field to a variable
                         const missingField = rule["field"];
 
-                        res.status(400).send({
-                            "message": `field ${missingField} is missing from data.`,
-                            "status": "error",
-                            "data": {
-                                validation: {
-                                    error: true,
-                                    field: missingField,
-                                    field_value: data[missingField],
-                                    condition: rule["condition"],
-                                    condition_value: rule["condition_value"]
-                                }
-                            }
-                        })
+                        res.status(400).send({"message": `field ${missingField} is missing from data.`, "status": "error", "data": null})
 
                     }
 
