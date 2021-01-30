@@ -45,7 +45,7 @@ app.use("/", RuleValidationRoute);
 //     res.status(404).send({message: "rule is required.", status: "error", data: null});
 // });
 
-const server = app.listen(5000, (params) => {
+const server = app.listen(process.env.PORT, (params) => {
     host = server.address().address;
 
     port = process.env.PORT === undefined ? server.address().port : process.env.PORT
